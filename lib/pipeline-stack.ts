@@ -1,12 +1,11 @@
 import * as cdk from '@aws-cdk/core';
-import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as actions from '@aws-cdk/aws-codepipeline-actions';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as pipelines from '@aws-cdk/pipelines';
 
 export interface PipelineStackProps extends cdk.StackProps {
-  readonly versionsBucket: s3.IBucket,
+  readonly versionsBucket: string,
   readonly environment: string,
   readonly promoteTo?: string,
 }
@@ -14,6 +13,8 @@ export interface PipelineStackProps extends cdk.StackProps {
 export class PipelineStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: PipelineStackProps) {
     super(scope, id, props);
+
+    const versionsBucket = s3.Bucket.fromBucketName(this, 'VersionsBucket', props.versionsBucket)
 
     // The CodePipeline
     const artifactBucket = new s3.Bucket(this, 'ArtifactBucket')
@@ -27,7 +28,7 @@ export class PipelineStack extends cdk.Stack {
           actions: [
             new actions.S3SourceAction({
               actionName: 'S3',
-              bucket: props.versionsBucket,
+              bucket: versionsBucket,
               bucketKey: `${props.environment}.zip`,
               output: cloudAssemblyArtifact
             })
@@ -58,7 +59,7 @@ export class PipelineStack extends cdk.Stack {
           new actions.S3DeployAction({
             actionName: 'promote',
             input: cloudAssemblyArtifact,
-            bucket: props.versionsBucket,
+            bucket: versionsBucket,
             objectKey: `${props.promoteTo}.zip`,
             extract: false,
           })
