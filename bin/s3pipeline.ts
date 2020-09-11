@@ -23,7 +23,30 @@ class QaStage extends cdk.Stage {
     super(scope, id, props);
 
     new ApplicationStack(this, 'S3PipelineApplicationStack-QA', {
+      // environment specific settings
       count: 1
+    })
+  }
+}
+
+class NxtStage extends cdk.Stage {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
+    super(scope, id, props);
+
+    new ApplicationStack(this, 'S3PipelineApplicationStack-NXT', {
+      // environment specific settings
+      count: 2
+    })
+  }
+}
+
+class PrdStage extends cdk.Stage {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StageProps) {
+    super(scope, id, props);
+
+    new ApplicationStack(this, 'S3PipelineApplicationStack-PRD', {
+      // environment specific settings
+      count: 3
     })
   }
 }
@@ -40,7 +63,8 @@ new PipelineStack(app, 'S3PipelineStagingStack', {
   environment: 'staging',
   promoteTo: 'production',
   stages: [
-    QaStage
+    QaStage,
+    NxtStage
   ]
 });
 
@@ -48,5 +72,7 @@ new PipelineStack(app, 'S3PipelineStagingStack', {
 new PipelineStack(app, 'S3PipelineProductionStack', {
   versionsBucket: versionsBucket,
   environment: 'production',
-  stages: []
+  stages: [
+    PrdStage
+  ]
 });
