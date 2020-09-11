@@ -1,22 +1,7 @@
 import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as ecs_patterns from '@aws-cdk/aws-ecs-patterns';
-import {Construct, Fn} from "@aws-cdk/core";
-import {Vpc} from "@aws-cdk/aws-ec2";
+import {ApplicationLoadBalancedFargateService, getVpc} from "./application-load-balanced-fargate-service";
 
-function getVpc(scope: Construct, vpcName?: string) {
-  const vpc = vpcName ?? 'Default';
-  return Vpc.fromVpcAttributes(scope, 'DefaultVpc', {
-    vpcId: Fn.importValue(`Platform:Vpc:${vpc}:VpcId`),
-    // TODO: this will only work if there is a subnet in each AZ within the region
-    availabilityZones: Fn.getAzs(),
-    privateSubnetIds: Fn.split(',', Fn.importValue(`Platform:Vpc:${vpc}:PrivateSubnetIds`)),
-    privateSubnetRouteTableIds: Fn.split(',', Fn.importValue(`Platform:Vpc:${vpc}:PrivateSubnetRouteTableIds`)),
-    publicSubnetIds: Fn.split(',', Fn.importValue(`Platform:Vpc:${vpc}:PublicSubnetIds`)),
-    publicSubnetRouteTableIds: Fn.split(',', Fn.importValue(`Platform:Vpc:${vpc}:PublicSubnetRouteTableIds`)),
-  });
-}
 
 export interface ApplicationStackProps extends  cdk.StackProps {
   count?: number
@@ -34,13 +19,11 @@ export class ApplicationStack extends cdk.Stack {
     });
 
     // Instantiate Fargate Service with just cluster and image
-    new ecs_patterns.ApplicationLoadBalancedFargateService(this, "FargateService", {
-      cluster,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-      },
-      desiredCount: props?.count,
-      assignPublicIp: false
+    new ApplicationLoadBalancedFargateService(this, "FargateService", {
+      tla: 's3pipeline',
+      vpc: vpc,
+      ecsCluster: cluster,
+      count: props?.count
     });
   }
 }
