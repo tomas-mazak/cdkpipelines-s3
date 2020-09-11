@@ -28,6 +28,7 @@ export class PipelineStack extends cdk.Stack {
     const cloudAssemblyArtifact = new codepipeline.Artifact()
     const codePipeline = new codepipeline.Pipeline(this, 'CodePipeline', {
       pipelineName: `S3Pipeline-${props.environment}`,
+      restartExecutionOnUpdate: true,
       artifactBucket: artifactBucket,
       stages: [
         {
