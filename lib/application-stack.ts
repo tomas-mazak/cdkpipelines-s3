@@ -39,7 +39,8 @@ export class ApplicationStack extends cdk.Stack {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       },
-      desiredCount: props?.count
+      desiredCount: props?.count,
+      assignPublicIp: false
     });
   }
 }
