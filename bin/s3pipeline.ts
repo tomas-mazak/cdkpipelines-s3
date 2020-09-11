@@ -46,7 +46,7 @@ class PrdStage extends cdk.Stage {
 
     new ApplicationStack(this, 'S3PipelineApplicationStack-PRD', {
       // environment specific settings
-      count: 3
+      count: 1
     })
   }
 }
