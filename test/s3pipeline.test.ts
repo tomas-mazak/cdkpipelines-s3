@@ -8,7 +8,8 @@ test('Empty Stack', () => {
     // WHEN
     const stack = new S3Pipeline.PipelineStack(app, 'MyTestStack', {
         versionsBucket: 's3pipeline-testing',
-        environment: 'test'
+        environment: 'test',
+        stages: []
     });
     // THEN
     expectCDK(stack).to(matchTemplate({
