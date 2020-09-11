@@ -6,13 +6,12 @@ import * as S3Pipeline from '../lib/pipeline-stack';
 test('Empty Stack', () => {
     const app = new cdk.App();
     // WHEN
-    const versionsBucket = new s3.Bucket(app, 'MyTestBucket');
     const stack = new S3Pipeline.PipelineStack(app, 'MyTestStack', {
-        versionsBucket,
+        versionsBucket: 's3pipeline-testing',
         environment: 'test'
     });
     // THEN
     expectCDK(stack).to(matchTemplate({
       "Resources": {}
-    }, MatchStyle.EXACT))
+    }, MatchStyle.SUPERSET))
 });

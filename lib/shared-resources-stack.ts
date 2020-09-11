@@ -18,7 +18,9 @@ export class SharedResourcesStack extends cdk.Stack {
       versioned: true,
     });
 
-    const artifactBucket = new s3.Bucket(this, 'ArtifactBucket')
+    const artifactBucket = new s3.Bucket(this, 'ArtifactBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY
+    })
     const sourceArtifact = new codepipeline.Artifact()
     const cloudAssemblyArtifact = new codepipeline.Artifact()
     const ciPipeline = new codepipeline.Pipeline(this, "CodePipeline", {

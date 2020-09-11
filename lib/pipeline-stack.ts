@@ -17,7 +17,9 @@ export class PipelineStack extends cdk.Stack {
     const versionsBucket = s3.Bucket.fromBucketName(this, 'VersionsBucket', props.versionsBucket)
 
     // The CodePipeline
-    const artifactBucket = new s3.Bucket(this, 'ArtifactBucket')
+    const artifactBucket = new s3.Bucket(this, 'ArtifactBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY
+    })
     const cloudAssemblyArtifact = new codepipeline.Artifact()
     const codePipeline = new codepipeline.Pipeline(this, 'CodePipeline', {
       pipelineName: `S3Pipeline-${props.environment}`,
